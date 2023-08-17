@@ -2,14 +2,14 @@ package svn
 
 import (
 	"bytes"
-	"os/exec"
-	"strings"
-	"io/ioutil"
 	"golang.org/x/text/encoding/simplifiedchinese"
 	"golang.org/x/text/transform"
+	"io/ioutil"
+	"os/exec"
+	"strings"
 )
 
-//默认的设置值
+// 默认的设置值
 var DefOption SvnGlobalOptions
 
 type SvnResult struct {
@@ -17,9 +17,9 @@ type SvnResult struct {
 	Result string
 }
 
-//是否有更新出东西
-func (this *SvnResult) HasUpdate() bool{
-	return strings.Count(this.Result,"\n") > 2
+// 是否有更新出东西
+func (this *SvnResult) HasUpdate() bool {
+	return strings.Count(this.Result, "\n") > 2
 }
 
 type SvnGlobalOptions struct {
@@ -29,14 +29,16 @@ type SvnGlobalOptions struct {
 	NoAuthCache bool
 	//svn程序地址
 	Svn string
+	// 扩展参数
+	ExtArgs []string
 }
 
-//执行svn命令
-//@param svnCmd: svn命令
-//@param option: 选项
+// 执行svn命令
+// @param svnCmd: svn命令
+// @param option: 选项
 func exeSvn(svnCmd string, option SvnGlobalOptions, args ...string) (*SvnResult, *SvnError) {
 	//6为SvnGlobalOption中字段个数*2
-	svnArgs := NewArgs(len(args) + 6)
+	svnArgs := NewArgs(len(args) + len(option.ExtArgs) + 6)
 	svnArgs.Add(svnCmd)
 	svnArgs.Add(args...)
 	if option.Username != "" {
@@ -46,6 +48,10 @@ func exeSvn(svnCmd string, option SvnGlobalOptions, args ...string) (*SvnResult,
 	}
 	//不要交互提法（API形式，这个是肯定的）
 	svnArgs.Add("--non-interactive")
+	// 扩展参数
+	if len(option.ExtArgs) > 0 {
+		svnArgs.Add(option.ExtArgs...)
+	}
 	if option.Svn == "" {
 		option.Svn = "svn"
 	}
