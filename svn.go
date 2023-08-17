@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-// 默认的设置值
+// DefOption 默认的设置值
 var DefOption SvnGlobalOptions
 
 type SvnResult struct {
@@ -17,7 +17,7 @@ type SvnResult struct {
 	Result string
 }
 
-// 是否有更新出东西
+// HasUpdate 是否有更新出东西
 func (this *SvnResult) HasUpdate() bool {
 	return strings.Count(this.Result, "\n") > 2
 }
